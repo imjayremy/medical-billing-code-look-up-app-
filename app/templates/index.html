@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HCPCS Code Lookup</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #0071e3;
+            --secondary-color: #86868b;
+            --background-color: #f5f5f7;
+            --card-color: #ffffff;
+            --text-color: #1d1d1f;
+            --border-radius: 12px;
+            --card-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+        }
+
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.4;
+            padding-bottom: 2rem;
+        }
+
+        .header {
+            background: linear-gradient(to right, #0071e3, #0077ed);
+            color: white;
+            padding: 2rem 0 3rem;
+            margin-bottom: -2rem;
+            border-bottom-left-radius: var(--border-radius);
+            border-bottom-right-radius: var(--border-radius);
+        }
+
+        .app-card {
+            background-color: var(--card-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-input {
+            padding: 1rem 1rem 1rem 3rem;
+            border-radius: 50px;
+            border: 1px solid #e0e0e0;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1.2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--secondary-color);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border: none;
+            border-radius: 50px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .btn-primary:hover {
+            background-color: #006edb;
+            transform: translateY(-1px);
+        }
+
+        .results-count {
+            color: var(--secondary-color);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .result-item {
+            border-bottom: 1px solid #f0f0f0;
+            padding: 1.25rem 0;
+            transition: background-color 0.2s;
+        }
+
+        .result-item:hover {
+            background-color: #fafafa;
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .code-badge {
+            background-color: rgba(0, 113, 227, 0.1);
+            color: var(--primary-color);
+            padding: 0.35rem 0.75rem;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .description-short {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .description-long {
+            color: var(--secondary-color);
+            font-size: 0.95rem;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: var(--secondary-color);
+        }
+
+        .no-results i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .app-footer {
+            text-align: center;
+            color: var(--secondary-color);
+            font-size: 0.85rem;
+            margin-top: 2rem;
+        }
+
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .spinner {
+            width: 2rem;
+            height: 2rem;
+            border: 3px solid rgba(0, 113, 227, 0.1);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .header {
+                padding: 1.5rem 0 2.5rem;
+            }
+
+            .app-card {
+                padding: 1.25rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="container">
+            <h1 class="text-center fw-light">HCPCS Code Lookup</h1>
+            <p class="text-center opacity-75 mb-0">Find medical billing codes and descriptions</p>
+        </div>
+    </div>
+
+    <div class="container mt-4">
+        <div class="app-card">
+            <form method="POST" id="searchForm">
+                <div class="search-box">
+                    <i class="search-icon fas fa-search"></i>
+                    <input type="text" name="query" class="form-control search-input" placeholder="Enter HCPCS code or description..." required autocomplete="off">
+                </div>
+                <div class="text-center mt-3">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search me-2"></i>Search
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="loading-spinner" id="loadingSpinner">
+            <div class="spinner"></div>
+            <p class="mt-2">Searching...</p>
+        </div>
+
+        {% if results %}
+        <div class="app-card">
+            <div class="results-count">{{ results|length }} result(s) found</div>
+
+            <div class="results-list">
+                {% for code, short_desc, long_desc in results %}
+                <div class="result-item">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="code-badge">{{ code }}</span>
+                    </div>
+                    <div class="description-short">{{ short_desc }}</div>
+                    <div class="description-long">{{ long_desc }}</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% elif request.method == "POST" %}
+        <div class="app-card">
+            <div class="no-results">
+                <i class="fas fa-search"></i>
+                <h4>No results found</h4>
+                <p>Try a different code or description</p>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="app-footer">
+            <p>HCPCS Code Lookup Tool • Version 2.0</p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById('searchForm').addEventListener('submit', function() {
+            document.getElementById('loadingSpinner').style.display = 'block';
+        });
+
+        // Add subtle animation to result items
+        document.addEventListener('DOMContentLoaded', function() {
+            const items = document.querySelectorAll('.result-item');
+            items.forEach((item, index) => {
+                item.style.opacity = '0';
+                item.style.transform = 'translateY(10px)';
+                setTimeout(() => {
+                    item.style.transition = 'opacity 0.3s, transform 0.3s';
+                    item.style.opacity = '1';
+                    item.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
+    </script>
+</body>
+</html>
