@@ -4,93 +4,121 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HCPCS Code Lookup</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary-color: #0071e3;
-            --secondary-color: #86868b;
-            --background-color: #f5f5f7;
-            --card-color: #ffffff;
-            --text-color: #1d1d1f;
+            --primary: #0071e3;
+            --secondary: #6e6e73;
+            --background: #f5f5f7;
+            --card: #ffffff;
+            --text: #1d1d1f;
+            --success: #34c759;
+            --warning: #ff9500;
             --border-radius: 12px;
-            --card-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+            --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
         }
 
         body {
-            background-color: var(--background-color);
-            color: var(--text-color);
+            background-color: var(--background);
+            color: var(--text);
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            line-height: 1.4;
+            line-height: 1.5;
             padding-bottom: 2rem;
         }
 
-        .header {
-            background: linear-gradient(to right, #0071e3, #0077ed);
+        .app-header {
+            background: linear-gradient(135deg, #0071e3 0%, #0077ed 100%);
             color: white;
-            padding: 2rem 0 3rem;
-            margin-bottom: -2rem;
+            padding: 2.5rem 0 3.5rem;
+            margin-bottom: -2.5rem;
             border-bottom-left-radius: var(--border-radius);
             border-bottom-right-radius: var(--border-radius);
         }
 
         .app-card {
-            background-color: var(--card-color);
+            background-color: var(--card);
             border-radius: var(--border-radius);
             box-shadow: var(--card-shadow);
-            padding: 1.5rem;
+            padding: 2rem;
             margin-bottom: 1.5rem;
+            transition: transform 0.3s ease;
         }
 
-        .search-box {
+        .app-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .search-container {
             position: relative;
         }
 
         .search-input {
-            padding: 1rem 1rem 1rem 3rem;
+            padding: 1.2rem 1.2rem 1.2rem 3.5rem;
             border-radius: 50px;
             border: 1px solid #e0e0e0;
-            font-size: 1rem;
-            transition: all 0.2s;
+            font-size: 1.1rem;
+            transition: all 0.3s;
         }
 
         .search-input:focus {
             outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.1);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.15);
         }
 
         .search-icon {
             position: absolute;
-            left: 1.2rem;
+            left: 1.5rem;
             top: 50%;
             transform: translateY(-50%);
-            color: var(--secondary-color);
+            color: var(--secondary);
+            z-index: 5;
         }
 
         .btn-primary {
-            background-color: var(--primary-color);
+            background-color: var(--primary);
             border: none;
             border-radius: 50px;
-            padding: 0.75rem 1.5rem;
-            font-weight: 500;
+            padding: 0.9rem 2rem;
+            font-weight: 600;
             transition: all 0.2s;
         }
 
         .btn-primary:hover {
             background-color: #006edb;
             transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 113, 227, 0.25);
+        }
+
+        .filter-btn {
+            background-color: #f5f5f7;
+            border: none;
+            border-radius: 50px;
+            padding: 0.6rem 1.2rem;
+            font-size: 0.9rem;
+            color: var(--secondary);
+            transition: all 0.2s;
+        }
+
+        .filter-btn.active {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .filter-btn:hover:not(.active) {
+            background-color: #e5e5e7;
         }
 
         .results-count {
-            color: var(--secondary-color);
-            font-size: 0.9rem;
-            margin-bottom: 1rem;
+            color: var(--secondary);
+            font-size: 0.95rem;
+            margin-bottom: 1.2rem;
         }
 
         .result-item {
             border-bottom: 1px solid #f0f0f0;
-            padding: 1.25rem 0;
+            padding: 1.5rem 0;
             transition: background-color 0.2s;
         }
 
@@ -104,54 +132,82 @@
 
         .code-badge {
             background-color: rgba(0, 113, 227, 0.1);
-            color: var(--primary-color);
-            padding: 0.35rem 0.75rem;
-            border-radius: 6px;
+            color: var(--primary);
+            padding: 0.4rem 0.9rem;
+            border-radius: 8px;
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
+            display: inline-block;
+            margin-bottom: 0.8rem;
         }
 
         .description-short {
             font-weight: 600;
-            margin-bottom: 0.25rem;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
         }
 
         .description-long {
-            color: var(--secondary-color);
-            font-size: 0.95rem;
+            color: var(--secondary);
+            font-size: 1rem;
+            line-height: 1.6;
         }
 
         .no-results {
             text-align: center;
             padding: 3rem 2rem;
-            color: var(--secondary-color);
+            color: var(--secondary);
         }
 
         .no-results i {
-            font-size: 3rem;
-            margin-bottom: 1rem;
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
             opacity: 0.5;
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #0071e3 0%, #5e9ef5 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .feature-title {
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+            font-size: 1.2rem;
+        }
+
+        .feature-description {
+            color: var(--secondary);
+            font-size: 0.95rem;
         }
 
         .app-footer {
             text-align: center;
-            color: var(--secondary-color);
-            font-size: 0.85rem;
-            margin-top: 2rem;
+            color: var(--secondary);
+            font-size: 0.9rem;
+            margin-top: 3rem;
         }
 
         .loading-spinner {
             display: none;
             text-align: center;
-            padding: 2rem;
+            padding: 3rem;
         }
 
         .spinner {
-            width: 2rem;
-            height: 2rem;
+            width: 2.5rem;
+            height: 2.5rem;
             border: 3px solid rgba(0, 113, 227, 0.1);
             border-radius: 50%;
-            border-top-color: var(--primary-color);
+            border-top-color: var(--primary);
             animation: spin 1s linear infinite;
             margin: 0 auto;
         }
@@ -160,61 +216,283 @@
             to { transform: rotate(360deg); }
         }
 
+        .tab-button {
+            background: none;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            font-weight: 500;
+            color: var(--secondary);
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .tab-button.active {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .tab-button.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: var(--primary);
+            border-radius: 3px;
+        }
+
+        .btn-favorite {
+            color: #ccc;
+            transition: all 0.2s;
+        }
+
+        .btn-favorite.active {
+            color: #ffc107;
+        }
+
+        .share-dropdown {
+            position: absolute;
+            right: 0;
+            top: 100%;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            padding: 0.75rem;
+            z-index: 100;
+            min-width: 180px;
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        .share-dropdown.show {
+            display: block;
+        }
+
+        .share-option {
+            display: flex;
+            align-items: center;
+            padding: 0.6rem 0.75rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .share-option:hover {
+            background-color: #f5f5f7;
+        }
+
+        .share-option i {
+            margin-right: 0.75rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Toast notification */
+        .toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1050;
+        }
+
+        .toast {
+            background-color: var(--card);
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .toast i {
+            margin-right: 0.75rem;
+            font-size: 1.25rem;
+        }
+
+        .toast.success i {
+            color: var(--success);
+        }
+
+        .toast.info i {
+            color: var(--primary);
+        }
+
         /* Responsive adjustments */
         @media (max-width: 768px) {
-            .header {
-                padding: 1.5rem 0 2.5rem;
+            .app-header {
+                padding: 2rem 0 3rem;
             }
 
             .app-card {
-                padding: 1.25rem;
+                padding: 1.5rem;
+            }
+
+            .search-input {
+                padding: 1rem 1rem 1rem 3rem;
+            }
+
+            .search-icon {
+                left: 1.2rem;
+            }
+
+            .share-dropdown {
+                left: 0;
+                right: auto;
             }
         }
     </style>
 </head>
 <body>
-    <div class="header">
+    <div class="app-header">
         <div class="container">
-            <h1 class="text-center fw-light">HCPCS Code Lookup</h1>
-            <p class="text-center opacity-75 mb-0">Find medical billing codes and descriptions</p>
+            <h1 class="text-center fw-light mb-2">HCPCS Code Lookup</h1>
+            <p class="text-center opacity-85 mb-0">Advanced medical billing code search with detailed information</p>
         </div>
     </div>
 
-    <div class="container mt-4">
+    <div class="container mt-5">
         <div class="app-card">
-            <form method="POST" id="searchForm">
-                <div class="search-box">
-                    <i class="search-icon fas fa-search"></i>
-                    <input type="text" name="query" class="form-control search-input" placeholder="Enter HCPCS code or description..." required autocomplete="off">
-                </div>
-                <div class="text-center mt-3">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-search me-2"></i>Search
+            <div class="d-flex justify-content-center mb-4">
+                <button class="tab-button active" id="searchTab">Search</button>
+                <button class="tab-button" id="favoritesTab">Favorites</button>
+                <button class="tab-button" id="historyTab">History</button>
+            </div>
+
+            <div id="searchSection">
+                <form method="POST" id="searchForm">
+                    <div class="search-container mb-4">
+                        <i class="search-icon fas fa-search"></i>
+                        <input type="text" name="query" class="form-control search-input" placeholder="Enter HCPCS code, description, or keyword..." required autocomplete="off">
+                    </div>
+
+                    <div class="d-flex flex-wrap gap-2 mb-4">
+                        <button type="button" class="filter-btn active">All</button>
+                        <button type="button" class="filter-btn">A Codes</button>
+                        <button type="button" class="filter-btn">B Codes</button>
+                        <button type="button" class="filter-btn">C Codes</button>
+                        <button type="button" class="filter-btn">D Codes</button>
+                    </div>
+
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-search me-2"></i>Search
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div id="favoritesSection" class="d-none">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4>Your Favorite Codes</h4>
+                    <button id="clearFavorites" class="btn btn-sm btn-outline-danger">
+                        <i class="fas fa-trash me-1"></i> Clear All
                     </button>
                 </div>
-            </form>
+                <div id="favoritesList" class="results-list">
+                    <!-- Favorites will be loaded here dynamically -->
+                </div>
+                <div id="emptyFavorites" class="text-center py-4">
+                    <i class="fas fa-star fa-2x text-warning mb-3"></i>
+                    <h4>No favorites yet</h4>
+                    <p class="text-muted">Save codes for quick access later</p>
+                </div>
+            </div>
+
+            <div id="historySection" class="d-none">
+                <div class="text-center py-4">
+                    <i class="fas fa-history fa-2x text-secondary mb-3"></i>
+                    <h4>Search History</h4>
+                    <p class="text-muted">Your recent searches will appear here</p>
+                </div>
+            </div>
         </div>
 
         <div class="loading-spinner" id="loadingSpinner">
             <div class="spinner"></div>
-            <p class="mt-2">Searching...</p>
+            <p class="mt-3">Searching database...</p>
         </div>
 
         {% if results %}
         <div class="app-card">
-            <div class="results-count">{{ results|length }} result(s) found</div>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div class="results-count">{{ results|length }} result(s) found</div>
+                <div>
+                    <button class="btn btn-sm btn-outline-secondary me-2">
+                        <i class="fas fa-download me-1"></i> Export
+                    </button>
+                    <div class="btn-group">
+                        <button class="btn btn-sm btn-outline-secondary">
+                            <i class="fas fa-list"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-secondary">
+                            <i class="fas fa-grip-horizontal"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
 
             <div class="results-list">
                 {% for code, short_desc, long_desc in results %}
-                <div class="result-item">
+                <div class="result-item" data-code="{{ code }}">
                     <div class="d-flex justify-content-between align-items-start mb-2">
                         <span class="code-badge">{{ code }}</span>
+                        <div class="position-relative">
+                            <button class="btn btn-sm btn-favorite" data-code="{{ code }}" data-short="{{ short_desc }}" data-long="{{ long_desc }}">
+                                <i class="far fa-star"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-secondary share-button" data-code="{{ code }}">
+                                <i class="fas fa-share-alt"></i>
+                            </button>
+                            <div class="share-dropdown" id="shareDropdown-{{ code }}">
+                                <div class="share-option" data-platform="slack" data-code="{{ code }}">
+                                    <i class="fab fa-slack"></i> Share to Slack
+                                </div>
+                                <div class="share-option" data-platform="teams" data-code="{{ code }}">
+                                    <i class="fab fa-microsoft"></i> Share to Teams
+                                </div>
+                                <div class="share-option" data-platform="copy" data-code="{{ code }}">
+                                    <i class="fas fa-link"></i> Copy Link
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="description-short">{{ short_desc }}</div>
                     <div class="description-long">{{ long_desc }}</div>
+                    <div class="mt-3">
+                        <button class="btn btn-sm btn-outline-primary me-2">
+                            <i class="fas fa-info-circle me-1"></i> Details
+                        </button>
+                        <button class="btn btn-sm btn-outline-success copy-code" data-code="{{ code }}">
+                            <i class="fas fa-copy me-1"></i> Copy Code
+                        </button>
+                    </div>
                 </div>
                 {% endfor %}
             </div>
+
+            <nav aria-label="Search results navigation" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#">Previous</a>
+                    </li>
+                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item">
+                        <a class="page-link" href="#">Next</a>
+                    </li>
+                </ul>
+            </nav>
         </div>
         {% elif request.method == "POST" %}
         <div class="app-card">
@@ -222,23 +500,434 @@
                 <i class="fas fa-search"></i>
                 <h4>No results found</h4>
                 <p>Try a different code or description</p>
+                <button class="btn btn-outline-primary mt-2">
+                    <i class="fas fa-redo me-1"></i> Try Again
+                </button>
             </div>
         </div>
         {% endif %}
+
+        <div class="row mt-4">
+            <div class="col-md-4 mb-3">
+                <div class="app-card h-100 text-center">
+                    <div class="feature-icon mx-auto">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h4 class="feature-title">Quick Search</h4>
+                    <p class="feature-description">Find codes instantly with our optimized search algorithm</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="app-card h-100 text-center">
+                    <div class="feature-icon mx-auto">
+                        <i class="fas fa-bookmark"></i>
+                    </div>
+                    <h4 class="feature-title">Save Favorites</h4>
+                    <p class="feature-description">Bookmark frequently used codes for quick access</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="app-card h-100 text-center">
+                    <div class="feature-icon mx-auto">
+                        <i class="fas fa-share-alt"></i>
+                    </div>
+                    <h4 class="feature-title">Easy Sharing</h4>
+                    <p class="feature-description">Share codes with colleagues via Slack or Teams</p>
+                </div>
+            </div>
+        </div>
 
         <div class="app-footer">
             <p>HCPCS Code Lookup Tool • Version 2.0</p>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        document.getElementById('searchForm').addEventListener('submit', function() {
-            document.getElementById('loadingSpinner').style.display = 'block';
-        });
+    <!-- Toast container for notifications -->
+    <div class="toast-container"></div>
 
-        // Add subtle animation to result items
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Initialize favorites from localStorage
+            let favorites = JSON.parse(localStorage.getItem('hcpcsFavorites')) || [];
+            let searchHistory = JSON.parse(localStorage.getItem('hcpcsHistory')) || [];
+
+            // Tab functionality
+            const searchTab = document.getElementById('searchTab');
+            const favoritesTab = document.getElementById('favoritesTab');
+            const historyTab = document.getElementById('historyTab');
+            const searchSection = document.getElementById('searchSection');
+            const favoritesSection = document.getElementById('favoritesSection');
+            const historySection = document.getElementById('historySection');
+
+            searchTab.addEventListener('click', function() {
+                setActiveTab('search');
+            });
+
+            favoritesTab.addEventListener('click', function() {
+                setActiveTab('favorites');
+                displayFavorites();
+            });
+
+            historyTab.addEventListener('click', function() {
+                setActiveTab('history');
+            });
+
+            function setActiveTab(tab) {
+                // Reset all tabs
+                searchTab.classList.remove('active');
+                favoritesTab.classList.remove('active');
+                historyTab.classList.remove('active');
+                searchSection.classList.add('d-none');
+                favoritesSection.classList.add('d-none');
+                historySection.classList.add('d-none');
+
+                // Activate selected tab
+                if (tab === 'search') {
+                    searchTab.classList.add('active');
+                    searchSection.classList.remove('d-none');
+                } else if (tab === 'favorites') {
+                    favoritesTab.classList.add('active');
+                    favoritesSection.classList.remove('d-none');
+                } else if (tab === 'history') {
+                    historyTab.classList.add('active');
+                    historySection.classList.remove('d-none');
+                }
+            }
+
+            // Filter buttons
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+
+            // Loading animation for form submission
+            document.getElementById('searchForm').addEventListener('submit', function() {
+                document.getElementById('loadingSpinner').style.display = 'block';
+                // Save search to history
+                const query = document.querySelector('input[name="query"]').value;
+                saveToHistory(query);
+            });
+
+            // Favorite functionality
+            document.querySelectorAll('.btn-favorite').forEach(button => {
+                const code = button.getAttribute('data-code');
+                const isFavorite = favorites.some(fav => fav.code === code);
+
+                if (isFavorite) {
+                    button.innerHTML = '<i class="fas fa-star"></i>';
+                    button.classList.add('active');
+                }
+
+                button.addEventListener('click', function() {
+                    const code = this.getAttribute('data-code');
+                    const shortDesc = this.getAttribute('data-short');
+                    const longDesc = this.getAttribute('data-long');
+
+                    toggleFavorite(code, shortDesc, longDesc, this);
+                });
+            });
+
+            function toggleFavorite(code, shortDesc, longDesc, button) {
+                const index = favorites.findIndex(fav => fav.code === code);
+
+                if (index === -1) {
+                    // Add to favorites
+                    favorites.push({
+                        code: code,
+                        shortDesc: shortDesc,
+                        longDesc: longDesc,
+                        dateAdded: new Date().toISOString()
+                    });
+                    button.innerHTML = '<i class="fas fa-star"></i>';
+                    button.classList.add('active');
+                    showToast('Added to favorites!', 'success');
+                } else {
+                    // Remove from favorites
+                    favorites.splice(index, 1);
+                    button.innerHTML = '<i class="far fa-star"></i>';
+                    button.classList.remove('active');
+                    showToast('Removed from favorites', 'info');
+
+                    // If we're on the favorites tab, refresh the list
+                    if (favoritesTab.classList.contains('active')) {
+                        displayFavorites();
+                    }
+                }
+
+                // Save to localStorage
+                localStorage.setItem('hcpcsFavorites', JSON.stringify(favorites));
+            }
+
+            function displayFavorites() {
+                const favoritesList = document.getElementById('favoritesList');
+                const emptyFavorites = document.getElementById('emptyFavorites');
+
+                favoritesList.innerHTML = '';
+
+                if (favorites.length === 0) {
+                    emptyFavorites.classList.remove('d-none');
+                    return;
+                }
+
+                emptyFavorites.classList.add('d-none');
+
+                favorites.forEach(fav => {
+                    const favoriteItem = document.createElement('div');
+                    favoriteItem.className = 'result-item';
+                    favoriteItem.innerHTML = `
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <span class="code-badge">${fav.code}</span>
+                            <div>
+                                <button class="btn btn-sm btn-favorite active" data-code="${fav.code}">
+                                    <i class="fas fa-star"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary share-button" data-code="${fav.code}">
+                                    <i class="fas fa-share-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="description-short">${fav.shortDesc}</div>
+                        <div class="description-long">${fav.longDesc}</div>
+                        <div class="mt-3">
+                            <button class="btn btn-sm btn-outline-primary me-2">
+                                <i class="fas fa-info-circle me-1"></i> Details
+                            </button>
+                            <button class="btn btn-sm btn-outline-success copy-code" data-code="${fav.code}">
+                                <i class="fas fa-copy me-1"></i> Copy Code
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger remove-favorite" data-code="${fav.code}">
+                                <i class="fas fa-trash me-1"></i> Remove
+                            </button>
+                        </div>
+                    `;
+
+                    favoritesList.appendChild(favoriteItem);
+                });
+
+                // Add event listeners to the new remove buttons
+                document.querySelectorAll('.remove-favorite').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const code = this.getAttribute('data-code');
+                        removeFavorite(code);
+                    });
+                });
+
+                // Add event listeners to the new favorite buttons
+                document.querySelectorAll('#favoritesList .btn-favorite').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const code = this.getAttribute('data-code');
+                        const fav = favorites.find(f => f.code === code);
+                        if (fav) {
+                            toggleFavorite(fav.code, fav.shortDesc, fav.longDesc, this);
+                        }
+                    });
+                });
+
+                // Add share functionality
+                setupShareButtons();
+            }
+
+            function removeFavorite(code) {
+                const index = favorites.findIndex(fav => fav.code === code);
+
+                if (index !== -1) {
+                    favorites.splice(index, 1);
+                    localStorage.setItem('hcpcsFavorites', JSON.stringify(favorites));
+                    displayFavorites();
+                    showToast('Removed from favorites', 'info');
+
+                    // Also update the star icon in search results if visible
+                    const searchResultStar = document.querySelector(`.result-item[data-code="${code}"] .btn-favorite`);
+                    if (searchResultStar) {
+                        searchResultStar.innerHTML = '<i class="far fa-star"></i>';
+                        searchResultStar.classList.remove('active');
+                    }
+                }
+            }
+
+            // Clear all favorites
+            document.getElementById('clearFavorites').addEventListener('click', function() {
+                if (confirm('Are you sure you want to clear all favorites?')) {
+                    favorites = [];
+                    localStorage.setItem('hcpcsFavorites', JSON.stringify(favorites));
+                    displayFavorites();
+                    showToast('All favorites cleared', 'info');
+
+                    // Update all star icons in search results
+                    document.querySelectorAll('.btn-favorite').forEach(button => {
+                        button.innerHTML = '<i class="far fa-star"></i>';
+                        button.classList.remove('active');
+                    });
+                }
+            });
+
+            // Share functionality
+            function setupShareButtons() {
+                document.querySelectorAll('.share-button').forEach(button => {
+                    button.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        const code = this.getAttribute('data-code');
+                        const dropdown = document.getElementById(`shareDropdown-${code}`);
+
+                        // Close any other open dropdowns
+                        document.querySelectorAll('.share-dropdown').forEach(dd => {
+                            if (dd !== dropdown) {
+                                dd.classList.remove('show');
+                            }
+                        });
+
+                        dropdown.classList.toggle('show');
+                    });
+                });
+
+                // Share options
+                document.querySelectorAll('.share-option').forEach(option => {
+                    option.addEventListener('click', function() {
+                        const platform = this.getAttribute('data-platform');
+                        const code = this.getAttribute('data-code');
+
+                        // Find the code details
+                        let codeDetails = {};
+                        if (favoritesTab.classList.contains('active')) {
+                            // We're on the favorites tab
+                            codeDetails = favorites.find(fav => fav.code === code);
+                        } else {
+                            // We're on the search results
+                            const resultItem = document.querySelector(`.result-item[data-code="${code}"]`);
+                            if (resultItem) {
+                                codeDetails = {
+                                    code: code,
+                                    shortDesc: resultItem.querySelector('.description-short').textContent,
+                                    longDesc: resultItem.querySelector('.description-long').textContent
+                                };
+                            }
+                        }
+
+                        shareCode(codeDetails, platform);
+
+                        // Close the dropdown
+                        document.querySelectorAll('.share-dropdown').forEach(dd => {
+                            dd.classList.remove('show');
+                        });
+                    });
+                });
+
+                // Close dropdowns when clicking elsewhere
+                document.addEventListener('click', function(e) {
+                    if (!e.target.closest('.share-button') && !e.target.closest('.share-dropdown')) {
+                        document.querySelectorAll('.share-dropdown').forEach(dd => {
+                            dd.classList.remove('show');
+                        });
+                    }
+                });
+            }
+
+            function shareCode(codeDetails, platform) {
+                const shareUrl = `${window.location.origin}${window.location.pathname}?code=${codeDetails.code}`;
+                const shareText = `HCPCS Code: ${codeDetails.code} - ${codeDetails.shortDesc}`;
+
+                switch(platform) {
+                    case 'slack':
+                        shareToSlack(shareUrl, shareText);
+                        break;
+                    case 'teams':
+                        shareToTeams(shareUrl, shareText);
+                        break;
+                    case 'copy':
+                        copyToClipboard(shareUrl);
+                        showToast('Link copied to clipboard!', 'success');
+                        break;
+                }
+            }
+
+            function shareToSlack(url, text) {
+                // Using Slack's sharing URL format :cite[1]
+                const slackUrl = `https://slack.com/intent/share?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`;
+                window.open(slackUrl, '_blank', 'width=600,height=400');
+            }
+
+            function shareToTeams(url, text) {
+                // Using Microsoft Teams' deep link format :cite[3]:cite[8]
+                const teamsUrl = `https://teams.microsoft.com/share?href=${encodeURIComponent(url)}&msgText=${encodeURIComponent(text)}`;
+                window.open(teamsUrl, '_blank', 'width=600,height=400');
+            }
+
+            function copyToClipboard(text) {
+                navigator.clipboard.writeText(text).catch(err => {
+                    console.error('Could not copy text: ', err);
+                    // Fallback for older browsers
+                    const textArea = document.createElement('textarea');
+                    textArea.value = text;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                });
+            }
+
+            // Copy code functionality
+            document.querySelectorAll('.copy-code').forEach(button => {
+                button.addEventListener('click', function() {
+                    const code = this.getAttribute('data-code');
+                    copyToClipboard(code);
+                    showToast(`Code ${code} copied to clipboard!`, 'success');
+                });
+            });
+
+            // Save search history
+            function saveToHistory(query) {
+                // Add to beginning of history array
+                searchHistory.unshift({
+                    query: query,
+                    timestamp: new Date().toISOString()
+                });
+
+                // Keep only the last 10 searches
+                if (searchHistory.length > 10) {
+                    searchHistory = searchHistory.slice(0, 10);
+                }
+
+                localStorage.setItem('hcpcsHistory', JSON.stringify(searchHistory));
+            }
+
+            // Toast notification function
+            function showToast(message, type = 'info') {
+                const toastContainer = document.querySelector('.toast-container');
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+
+                let icon = 'fas fa-info-circle';
+                if (type === 'success') icon = 'fas fa-check-circle';
+
+                toast.innerHTML = `
+                    <i class="${icon}"></i>
+                    <span>${message}</span>
+                `;
+
+                toastContainer.appendChild(toast);
+
+                // Show toast
+                setTimeout(() => {
+                    toast.classList.add('show');
+                }, 10);
+
+                // Hide after 3 seconds
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    setTimeout(() => {
+                        toastContainer.removeChild(toast);
+                    }, 300);
+                }, 3000);
+            }
+
+            // Initialize share buttons
+            setupShareButtons();
+
+            // Add subtle animation to result items
             const items = document.querySelectorAll('.result-item');
             items.forEach((item, index) => {
                 item.style.opacity = '0';
